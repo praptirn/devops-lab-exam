@@ -2,62 +2,69 @@ pipeline {
     agent any
 
     stages {
-        // Stage 1: Clone
-        // This stage is usually handled automatically by Jenkins when pulling from Git.
+
         stage('Clone') {
             steps {
-                echo 'Stage 1: Cloning repository...'
-                // checkout scm
+                echo 'Repository cloned successfully'
             }
         }
 
-        // Stage 2: Install Dependencies
         stage('Install Dependencies') {
             steps {
-                echo 'Stage 2: Installing dependencies...'
-                sh '''
+
+                echo 'Installing backend dependencies...'
+
+                bat '''
                     cd backend
                     pip install -r requirements.txt
                 '''
-                sh '''
+
+                echo 'Installing frontend dependencies...'
+
+                bat '''
                     cd frontend
                     npm install
                 '''
             }
         }
 
-        // Stage 3: Build
         stage('Build') {
             steps {
-                echo 'Stage 3: Building application...'
-                echo 'Backend: No-op for Python'
-                sh '''
+
+                echo 'Building frontend application...'
+
+                bat '''
                     cd frontend
                     npm run build
                 '''
             }
         }
 
-        // Stage 4: Test
         stage('Test') {
             steps {
-                echo 'Stage 4: Running tests...'
-                sh '''
+
+                echo 'Running backend tests...'
+
+                bat '''
                     cd backend
                     python -m unittest discover
                 '''
-                sh '''
+
+                echo 'Running frontend tests...'
+
+                bat '''
                     cd frontend
                     npm test
                 '''
             }
         }
 
-        // Stage 5: Deploy
         stage('Deploy') {
             steps {
-                echo 'Stage 5: Deploying application...'
-                sh '''
+
+                echo 'Deploying application using Docker Compose...'
+
+                bat '''
                     docker-compose up --build -d
                 '''
             }
@@ -65,9 +72,11 @@ pipeline {
     }
 
     post {
+
         success {
             echo 'Pipeline completed successfully!'
         }
+
         failure {
             echo 'Pipeline failed.'
         }
