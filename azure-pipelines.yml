@@ -1,20 +1,31 @@
 pool:
   name: Default
+
 steps:
 - checkout: self
   fetchDepth: 0
+
 - script: |
-    "D:\Engineering\DownloadedApplications\_work\_tasks\SonarQubeAnalyze_6d01813a-9589-4b15-8491-8164aeb38055\7.4.2\sonar-scanner\bin\sonar-scanner.bat" ^
+    echo Checking SonarQube connectivity...
+    curl -v "$(SONAR_HOST_URL)/api/server/version" || echo "Server unreachable - check SONAR_HOST_URL"
+  displayName: Verify SonarQube URL
+
+- script: |
+    "$(Agent.WorkFolder)\_tasks\SonarQubeAnalyze_6d01813a-9589-4b15-8491-8164aeb38055\7.4.2\sonar-scanner\bin\sonar-scanner.bat" ^
       -Dsonar.projectKey=Taskflow ^
       -Dsonar.projectName=Taskflow ^
       -Dsonar.sources=. ^
       -Dsonar.host.url=$(SONAR_HOST_URL) ^
       -Dsonar.token=$(SONAR_TOKEN) ^
-      -Dsonar.scm.provider=git
+      -Dsonar.scm.provider=git ^
+      -Dsonar.scm.exclusions.disabled=true
   displayName: Run SonarQube Analysis
+
 - script: docker compose build
   displayName: Build Docker Images
+
 - script: docker compose up -d
   displayName: Run Containers
+
 - script: docker ps
   displayName: Check Running Containers
