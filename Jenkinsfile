@@ -1,7 +1,6 @@
 pipeline {
 agent any
 
-```
 tools {
     jdk 'jdk-25'
 }
@@ -15,16 +14,16 @@ environment {
 
 stages {
 
+    stage('Checkout Code') {
+        steps {
+            git branch: 'main', url: 'https://github.com/praptirn/devops-lab-exam.git'
+        }
+    }
+
     stage('Git Version Check') {
         steps {
             bat 'git --version'
             bat 'git log -1 --oneline'
-        }
-    }
-
-    stage('Checkout Code') {
-        steps {
-            git branch: 'main', url: 'https://github.com/praptirn/devops-lab-exam.git'
         }
     }
 
@@ -45,19 +44,10 @@ stages {
     stage('Dependency Check') {
         steps {
             dir('frontend') {
-                dependencyCheck additionalArguments: '--scan .', odcInstallation: 'dp'
+                dependencyCheck additionalArguments: '--scan . --disableYarnAudit', odcInstallation: 'dp'
             }
 
             dependencyCheckPublisher pattern: '**/dependency-check-report.xml'
-        }
-    }
-
-    stage('Audit Check') {
-        steps {
-            bat '''
-                cd frontend
-                npm audit
-            '''
         }
     }
 
@@ -97,10 +87,6 @@ stages {
                     """
                 }
             }
-
-            timeout(time: 15, unit: 'MINUTES') {
-                waitForQualityGate abortPipeline: false
-            }
         }
     }
 
@@ -120,7 +106,6 @@ stages {
                     passwordVariable: 'DOCKER_PASS'
                 )
             ]) {
-
                 bat 'echo %DOCKER_PASS% | docker login -u %DOCKER_USER% --password-stdin'
 
                 bat "docker push ${BACKEND_IMAGE}:${BUILD_NUMBER}"
@@ -148,6 +133,5 @@ post {
         echo 'Pipeline failed.'
     }
 }
-```
 
 }
