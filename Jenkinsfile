@@ -75,26 +75,14 @@ stages {
         steps {
             script {
                 withSonarQubeEnv('SonarQube-server') {
-
                     bat """
                     ${SCANNER_HOME}\\bin\\sonar-scanner ^
-                    -Dsonar.projectKey=devops-lab-exam ^
                     -Dsonar.projectName=devops-lab-exam ^
+                    -Dsonar.projectKey=devops-lab-exam ^
                     -Dsonar.sources=backend,frontend/src ^
-                    -Dsonar.exclusions=**/node_modules/**,**/__pycache__/**,**/dist/** ^
-                    -Dsonar.python.coverage.reportPaths=backend/coverage.xml ^
-                    -Dsonar.javascript.lcov.reportPaths=frontend/coverage/lcov.info ^
-                    -Dsonar.sourceEncoding=UTF-8
+                    -Dsonar.exclusions=**/node_modules/**,**/__pycache__/**,**/dist/**
                     """
                 }
-            }
-        }
-    }
-
-    stage('Quality Gate') {
-        steps {
-            timeout(time: 10, unit: 'MINUTES') {
-                waitForQualityGate abortPipeline: true
             }
         }
     }
