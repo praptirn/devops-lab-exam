@@ -116,9 +116,12 @@ stages {
 
     stage('Deployment') {
         steps {
-            bat 'docker-compose down --remove-orphans || exit 0'
-            bat """for /f "tokens=1" %%i in ('docker ps -q --filter "publish=5000"') do docker stop %%i & docker rm %%i || exit 0"""
-            bat """for /f "tokens=1" %%i in ('docker ps -q --filter "publish=5173"') do docker stop %%i & docker rm %%i || exit 0"""
+            bat '''
+                docker-compose down --remove-orphans 2>nul
+                for /f "tokens=1" %%i in ('docker ps -q --filter "publish=5000"') do docker stop %%i & docker rm %%i
+                for /f "tokens=1" %%i in ('docker ps -q --filter "publish=5173"') do docker stop %%i & docker rm %%i
+                exit /b 0
+            '''
             bat 'docker-compose up --build -d'
         }
     }
