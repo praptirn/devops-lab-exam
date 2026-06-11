@@ -7,6 +7,8 @@ tools {
 
 environment {
     SCANNER_HOME = tool 'Sonar-scanner'
+    PYTHON_HOME = 'D:\\Python312'
+    PATH = "${PYTHON_HOME};${PYTHON_HOME}\\Scripts;${PATH}"
     DOCKERHUB_USERNAME = 'praptirn'
     BACKEND_IMAGE = "${DOCKERHUB_USERNAME}/taskflow-backend"
     FRONTEND_IMAGE = "${DOCKERHUB_USERNAME}/taskflow-frontend"
