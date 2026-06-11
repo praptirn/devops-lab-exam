@@ -29,15 +29,13 @@ stages {
 
     stage('Install Dependencies') {
         steps {
-            bat '''
-                cd backend
-                python3 -m pip install -r requirements.txt
-            '''
+            dir('backend') {
+                bat 'python -m pip install -r requirements.txt'
+            }
 
-            bat '''
-                cd frontend
-                npm install
-            '''
+            dir('frontend') {
+                bat 'npm install'
+            }
         }
     }
 
@@ -53,24 +51,21 @@ stages {
 
     stage('Build') {
         steps {
-            bat '''
-                cd frontend
-                npm run build
-            '''
+            dir('frontend') {
+                bat 'npm run build'
+            }
         }
     }
 
     stage('Test') {
         steps {
-            bat '''
-                cd backend
-                python -m unittest discover
-            '''
+            dir('backend') {
+                bat 'python -m unittest discover'
+            }
 
-            bat '''
-                cd frontend
-                npm test
-            '''
+            dir('frontend') {
+                bat 'npm test'
+            }
         }
     }
 
